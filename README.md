@@ -17,6 +17,7 @@ The url source list should be a simple txt list of sources that spamblocker will
 e.g.
 
 https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt
+
 http://params.nevoweb.com/spam-blacklist.txt
 
 
@@ -43,4 +44,4 @@ website-stealer-warning.hdmoviecamera.net
  
 Each url on the source list will be read and then used to build the regexpr.
 
- 
+This program can be ran from the windows task scheduler.  Usually setup to run on the 1st of everymonth month.  But can be set to run each night is wanted.  The IIS rule will only be updated if the source urls for spam change.  
