@@ -18,7 +18,7 @@ namespace spamblocker
         {
             var urllist = "";
 
-            var sourceslist = "http://params.nevoweb.com/spam-blacklist-sources.txt";            
+            var sourceslist = "https://raw.githubusercontent.com/nbrightproject/spamsafelists/master/spam-blacklist-sources.txt";            
             if (args.Length == 1) sourceslist = args[0];
 
             // get the source list into an array 
