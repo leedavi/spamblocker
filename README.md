@@ -8,9 +8,9 @@ the spamblocker.exe can take 1 argument, which is the url of the list of url sou
 
 e.g.
 
-spamblocker.exe http://params.nevoweb.com/spam-blacklist-sources.txt
+spamblocker.exe https://raw.githubusercontent.com/nbrightproject/spamsafelists/master/spam-blacklist-sources.txt
 
-If no parameter is passed the a default of "http://params.nevoweb.com/spam-blacklist-sources.txt" will be used.
+If no parameter is passed the a default of "https://raw.githubusercontent.com/nbrightproject/spamsafelists/master/spam-blacklist-sources.txt" will be used.
 
 The url source list should be a simple txt list of sources that spamblocker will use.
 
@@ -18,7 +18,7 @@ e.g.
 
 https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt
 
-http://params.nevoweb.com/spam-blacklist.txt
+https://raw.githubusercontent.com/nbrightproject/spamsafelists/master/spam-blacklist-sources.txt
 
 
 The first of the examples is the piwik github list.

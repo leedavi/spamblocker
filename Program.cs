@@ -145,7 +145,7 @@ namespace spamblocker
                 {
                     try
                     {
-                        var xmlDoc = new XmlDataDocument();
+                        var xmlDoc = new XmlDocument();
                         xmlDoc.Load(hostconfigpath);
 
                         // create a global element which will be injected 

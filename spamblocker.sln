@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "spamblocker", "spamblocker.csproj", "{E878D1E6-2827-4CB8-8FE2-E9A0785DD5E4}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupSpamblocker", "Installation\SetupSpamblocker\SetupSpamblocker.vdproj", "{5D3DE242-0DE2-499E-8648-C5CF4620B565}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,8 +17,13 @@ Global
 		{E878D1E6-2827-4CB8-8FE2-E9A0785DD5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E878D1E6-2827-4CB8-8FE2-E9A0785DD5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E878D1E6-2827-4CB8-8FE2-E9A0785DD5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D3DE242-0DE2-499E-8648-C5CF4620B565}.Debug|Any CPU.ActiveCfg = Debug
+		{5D3DE242-0DE2-499E-8648-C5CF4620B565}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E478D95C-68B9-419B-AEA2-72D20E0073CA}
 	EndGlobalSection
 EndGlobal
