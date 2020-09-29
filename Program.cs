@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Web.Administration;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.IO;
@@ -140,7 +141,27 @@ namespace spamblocker
         {
             if (rewriteXmlNode != "")
             {
-                var hostconfigpath = "C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config";
+                using (ServerManager serverManager = new ServerManager())
+                {
+                    Configuration configapp = serverManager.GetApplicationHostConfiguration();
+                    try
+                    {
+                        ConfigurationSection webServerSection = configapp.GetSection("system.webServer/rewrite");
+
+                        ConfigurationElementCollection webServerCollection = webServerSection.GetCollection();
+                        ConfigurationElement addElement = webServerCollection.CreateElement("rewrite");
+                        webServerCollection.Add(addElement);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Write(ex.ToString());
+                        throw ex;
+                    }
+                    serverManager.CommitChanges();
+                }
+
+                File.Copy("C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config", "C:\\Windows\\System32\\inetsrv\\config\\applicationHost.copy", true);
+                var hostconfigpath = @"C:\Windows\System32\inetsrv\config\applicationHost.copy";
                 if (File.Exists(hostconfigpath))
                 {
                     try
@@ -153,43 +174,42 @@ namespace spamblocker
                         newRuleOuter.InnerXml = rewriteXmlNode;
                         XmlNode newRule = newRuleOuter.SelectSingleNode("rule");
 
+                        var rewriteNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite");
+                        if (rewriteNode == null)
+                        {
+                            var webServerNod = xmlDoc.SelectSingleNode("configuration/system.webServer"); // should always exists
+                            XmlNode rewriteRules = xmlDoc.CreateNode(XmlNodeType.Element, "rewrite", null);
+                            webServerNod?.AppendChild(rewriteRules);
+                            rewriteNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite");
+                        }
 
                         var globalRulesNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite/globalRules");
                         if (globalRulesNode == null)
                         {
-                            var rewriteNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite");
-                            if (rewriteNode == null)
-                            {
-                                var webServerNod = xmlDoc.SelectSingleNode("configuration/system.webServer");
-                                XmlNode rewriteRules = xmlDoc.CreateNode(XmlNodeType.Element, "rewrite", null);
-                                webServerNod?.AppendChild(rewriteRules);
-                                rewriteNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite");
-                            }
-
                             // create globalrules node and inject rule node/
                             XmlNode newglobalRules = xmlDoc.CreateNode(XmlNodeType.Element, "globalRules", null);
                             newglobalRules.InnerXml = rewriteXmlNode;
                             rewriteNode?.AppendChild(newglobalRules);
+                            globalRulesNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite/globalRules");
+                        }
+
+                        // rules exists, find name="Spam-Referrals" and replace, if diff
+                        XmlNode newruleNode = xmlDoc.CreateNode(XmlNodeType.Element, "rule", null);
+                        XmlAttribute nameatt = xmlDoc.CreateAttribute("name");
+                        nameatt.Value = "Spam-Referrals";
+                        newruleNode.Attributes.Append(nameatt);
+                        var innerXml = rewriteXmlNode.Replace("<rule name=\"Spam-Referrals\">", "").Replace("</rule>", "").Trim() + "\r\n";
+                        newruleNode.InnerXml = innerXml;
+                        var ruleNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite/globalRules/rule[@name='Spam-Referrals']");
+                        if (ruleNode == null)
+                        {
+                            globalRulesNode.AppendChild(newruleNode);
                         }
                         else
                         {
-                            // rules exists, find name="Spam-Referrals" and replace, if diff
-                            XmlNode newruleNode = xmlDoc.CreateNode(XmlNodeType.Element, "rule", null);
-                            XmlAttribute nameatt = xmlDoc.CreateAttribute("name");
-                            nameatt.Value = "Spam-Referrals";
-                            newruleNode.Attributes.Append(nameatt);
-                            var innerXml = rewriteXmlNode.Replace("<rule name=\"Spam-Referrals\">", "").Replace("</rule>", "").Trim() + "\r\n";
-                            newruleNode.InnerXml = innerXml;
-                            var ruleNode = xmlDoc.SelectSingleNode("configuration/system.webServer/rewrite/globalRules/rule[@name='Spam-Referrals']");
-                            if (ruleNode == null)
-                            {
-                                globalRulesNode.AppendChild(newruleNode);
-                            }
-                            else
-                            {
-                                globalRulesNode.ReplaceChild(newruleNode, ruleNode);
-                            }
+                            globalRulesNode.ReplaceChild(newruleNode, ruleNode);
                         }
+
                         xmlDoc.Save(".\\spammerblock_config.xml");
 
                         // now we've created it overwrite live config file
